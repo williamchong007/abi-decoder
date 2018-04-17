@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha test",
-    "dist": "webpack"
+    "dist:es5lib": "babel index.js --out-dir dist/es5",
+    "dist:browser": "webpack",
+    "dist": "npm run dist:es5lib && npm run dist:browser"
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
   "devDependencies": {
     "mocha": "^4.0.0",
     "babel-core": "^6.23.1",
+    "babel-cli": "^6.26.0",
     "babel-loader": "^6.3.2",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-es2015-modules-amd": "^6.22.0",
