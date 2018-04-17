@@ -1,4 +1,9 @@
 # abi-decoder
+
+Fork of https://github.com/ConsenSys/abi-decoder with cleaned up dep and es5 build
+
+Original README
+---
 Nodejs and Javascript library for decoding data params and events from etherem transactions
 
 # Install
