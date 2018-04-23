@@ -1,5 +1,8 @@
-const SolidityCoder = require("web3/lib/solidity/coder.js");
 const Web3 = require('web3');
+
+const web3 = new Web3();
+const sha3 = web3.utils.sha3;
+const BN = web3.utils.BN;
 
 const state = {
   savedABIs : [],
@@ -16,7 +19,7 @@ function _addABI(abiArray) {
     // Iterate new abi to generate method id's
     abiArray.map(function (abi) {
       if(abi.name){
-        const signature = new Web3().sha3(abi.name + "(" + abi.inputs.map(function(input) {return input.type;}).join(",") + ")");
+        const signature = sha3(abi.name + "(" + abi.inputs.map(function(input) {return input.type;}).join(",") + ")");
         if(abi.type == "event"){
           state.methodIDs[signature.slice(2)] = abi;
         }
@@ -39,7 +42,7 @@ function _removeABI(abiArray) {
     // Iterate new abi to generate method id's
     abiArray.map(function (abi) {
       if(abi.name){
-        const signature = new Web3().sha3(abi.name + "(" + abi.inputs.map(function(input) {return input.type;}).join(",") + ")");
+        const signature = sha3(abi.name + "(" + abi.inputs.map(function(input) {return input.type;}).join(",") + ")");
         if(abi.type == "event"){
           if (state.methodIDs[signature.slice(2)]) {
             delete state.methodIDs[signature.slice(2)];
@@ -67,7 +70,9 @@ function _decodeMethod(data) {
   const abiItem = state.methodIDs[methodID];
   if (abiItem) {
     const params = abiItem.inputs.map(function (item) { return item.type; });
-    let decoded = SolidityCoder.decodeParams(params, data.slice(10));
+    let decoded = web3.eth.abi.decodeParameters(params, data.slice(10));
+    delete decoded.__length__;
+    decoded = Object.values(decoded);
     return {
       name: abiItem.name,
       params: decoded.map(function (param, index) {
@@ -79,9 +84,9 @@ function _decodeMethod(data) {
           const isArray = Array.isArray(param);
 
           if (isArray) {
-            parsedParam = param.map(val => new Web3().toBigNumber(val).toString());
+            parsedParam = param.map(val => new BN(val).toString());
           } else {
-            parsedParam = new Web3().toBigNumber(param).toString();
+            parsedParam = new BN(param).toString();
           }
         }
         return {
@@ -94,7 +99,7 @@ function _decodeMethod(data) {
   }
 }
 
-function padZeros (address) {
+function handleZeros (address) {
   var formatted = address;
   if (address.indexOf('0x') != -1) {
     formatted = address.slice(2);
@@ -102,6 +107,8 @@ function padZeros (address) {
 
   if (formatted.length < 40) {
     while (formatted.length < 40) formatted = "0" + formatted;
+  } else if (formatted.length > 40) {
+    formatted = formatted.slice(-40);
   }
 
   return "0x" + formatted;
@@ -125,7 +132,9 @@ function _decodeLogs(logs) {
           }
         }
       );
-      const decodedData = SolidityCoder.decodeParams(dataTypes, logData.slice(2));
+      let decodedData = web3.eth.abi.decodeParameters(dataTypes, logData.slice(2));
+      delete decodedData.__length__;
+      decodedData = Object.values(decodedData);
       // Loop topic and data to get the params
       method.inputs.map(function (param) {
         var decodedP = {
@@ -143,10 +152,10 @@ function _decodeLogs(logs) {
         }
 
         if (param.type == "address"){
-          decodedP.value = padZeros(new Web3().toBigNumber(decodedP.value).toString(16));
+          decodedP.value = handleZeros(decodedP.value);
         }
-        else if(param.type == "uint256" || param.type == "uint8" || param.type == "int" ){
-          decodedP.value = new Web3().toBigNumber(decodedP.value).toString(10);
+        else if (param.type == "uint256" || param.type == "uint8" || param.type == "int" ){
+          decodedP.value = new BN(decodedP.value).toString(10);
         }
 
         decodedParams.push(decodedP);

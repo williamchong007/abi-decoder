@@ -31,7 +31,7 @@ describe('abi decoder', function () {
     expect(decodedData.name).to.be.a('string');
     expect(decodedData.params).to.be.a('array');
     expect(decodedData.params).to.have.length.of(3);
-    expect(decodedData.params[0].value).to.deep.equal(['0xa6d9c5f7d4de3cef51ad3b7235d79ccc95114de5', '0xa6d9c5f7d4de3cef51ad3b7235d79ccc95114daa']);
+    expect(decodedData.params[0].value).to.deep.equal(['0xa6D9C5F7D4de3CEF51aD3b7235D79cCC95114de5', '0xa6D9C5f7d4De3cEF51AD3b7235d79cCC95114DAa']);
     expect(decodedData.params[0].name).to.equal('_owners');
     expect(decodedData.params[0].type).to.equal('address[]');
     expect(decodedData.params[1].value).to.equal('1');
@@ -74,10 +74,10 @@ describe('abi decoder', function () {
     expect(decodedLogs[0].events).to.have.length(2);
     expect(decodedLogs[0].address).to.equal('0x0457874Bb0a346962128a0C01310d00Fc5bb6a83');
     expect(decodedLogs[0].events[0].name).to.equal('sender');
-    expect(decodedLogs[0].events[0].value).to.equal('0x65039084cc6f4773291a6ed7dcf5bc3a2e894ff3');
+    expect(decodedLogs[0].events[0].value).to.equal('0x65039084CC6f4773291A6ed7dCF5bC3A2e894FF3');
     expect(decodedLogs[0].events[0].type).to.equal('address');
     expect(decodedLogs[0].events[1].name).to.equal('instantiation');
-    expect(decodedLogs[0].events[1].value).to.equal('0x435a4167bc34107bd03e267f9d6b869255151a27');
+    expect(decodedLogs[0].events[1].value).to.equal('0x435a4167bC34107bD03e267F9D6B869255151a27');
     expect(decodedLogs[0].events[1].type).to.equal('address');
   });
 
