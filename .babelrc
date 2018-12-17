@@ -1,4 +1,9 @@
 {
-  "presets": ["es2015"],
-  "plugins": ["add-module-exports", "transform-runtime"]
+  "presets": ["@babel/env"],
+  "plugins": [
+    [
+      "@babel/plugin-transform-runtime",
+      { "corejs": 2 }
+    ]
+  ]
 }
