@@ -1,8 +1,8 @@
-const Web3 = require('web3');
+const ethAbiCoder = require ('web3-eth-abi').AbiCoder;
+const web3Util = require ('web3-utils');
 
-const web3 = new Web3();
-const sha3 = web3.utils.sha3;
-const BN = web3.utils.BN;
+const sha3 = web3Util.sha3;
+const BN = web3Util.BN;
 
 const state = {
   savedABIs : [],
@@ -70,7 +70,7 @@ function _decodeMethod(data) {
   const abiItem = state.methodIDs[methodID];
   if (abiItem) {
     const params = abiItem.inputs.map(function (item) { return item.type; });
-    let decoded = web3.eth.abi.decodeParameters(params, data.slice(10));
+    let decoded = ethAbiCoder.decodeParameters(params, data.slice(10));
     delete decoded.__length__;
     decoded = Object.values(decoded);
     return {
@@ -132,7 +132,7 @@ function _decodeLogs(logs) {
           }
         }
       );
-      let decodedData = web3.eth.abi.decodeParameters(dataTypes, logData.slice(2));
+      let decodedData = ethAbiCoder.decodeParameters(dataTypes, logData.slice(2));
       delete decodedData.__length__;
       decodedData = Object.values(decodedData);
       // Loop topic and data to get the params

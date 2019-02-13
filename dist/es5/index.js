@@ -8,11 +8,12 @@ var _typeof2 = _interopRequireDefault(require("@babel/runtime-corejs2/helpers/ty
 
 var _isArray = _interopRequireDefault(require("@babel/runtime-corejs2/core-js/array/is-array"));
 
-var Web3 = require('web3');
+var ethAbiCoder = require('web3-eth-abi').AbiCoder;
 
-var web3 = new Web3();
-var sha3 = web3.utils.sha3;
-var BN = web3.utils.BN;
+var web3Util = require('web3-utils');
+
+var sha3 = web3Util.sha3;
+var BN = web3Util.BN;
 var state = {
   savedABIs: [],
   methodIDs: {}
@@ -81,7 +82,7 @@ function _decodeMethod(data) {
     var params = abiItem.inputs.map(function (item) {
       return item.type;
     });
-    var decoded = web3.eth.abi.decodeParameters(params, data.slice(10));
+    var decoded = ethAbiCoder.decodeParameters(params, data.slice(10));
     delete decoded.__length__;
     decoded = (0, _values.default)(decoded);
     return {
@@ -149,7 +150,7 @@ function _decodeLogs(logs) {
           dataTypes.push(input.type);
         }
       });
-      var decodedData = web3.eth.abi.decodeParameters(dataTypes, logData.slice(2));
+      var decodedData = ethAbiCoder.decodeParameters(dataTypes, logData.slice(2));
       delete decodedData.__length__;
       decodedData = (0, _values.default)(decodedData); // Loop topic and data to get the params
 
